@@ -1,0 +1,100 @@
+import { useState } from "react";
+
+const defaultCards = [
+  {
+    id: 1,
+    name: "Сукуна",
+    image: "https://upload.wikimedia.org/wikipedia/en/7/76/Sukuna_Jujutsu_Kaisen.png",
+    rank: "А",
+  },
+  {
+    id: 2,
+    name: "Хуа Чэн",
+    image: "https://static.wikia.nocookie.net/heaven-officials-blessing/images/1/1c/Hua_Cheng.png",
+    rank: "S",
+  },
+];
+
+const rankOrder = ["E", "Д", "С", "G", "Р", "А", "S", "Х"];
+
+export default function MCards() {
+  const [cards, setCards] = useState(defaultCards);
+
+  // Добавить карточку
+  const addCard = () => {
+    const name = prompt("Имя персонажа:");
+    const image = prompt("Ссылка на изображение:");
+    const rank = prompt("Ранг (E, Д, С, G, Р, А, S, Х):").toUpperCase();
+
+    if (name && image && rankOrder.includes(rank)) {
+      const newCard = {
+        id: Date.now(),
+        name,
+        image,
+        rank,
+      };
+      setCards([...cards, newCard]);
+    } else {
+      alert("Проверь данные и попробуй ещё раз.");
+    }
+  };
+
+  // Повысить ранг карточки
+  const promoteCard = (id) => {
+    setCards((prev) =>
+      prev.map((card) => {
+        if (card.id === id) {
+          const currentIndex = rankOrder.indexOf(card.rank);
+          const nextRank =
+            currentIndex < rankOrder.length - 1 ? rankOrder[currentIndex + 1] : card.rank;
+          return { ...card, rank: nextRank };
+        }
+        return card;
+      })
+    );
+  };
+
+  return (
+    <div style={{ padding: 20, fontFamily: "Arial, sans-serif" }}>
+      <h1>🌟 М Карты</h1>
+      <button onClick={addCard} style={{ marginBottom: 20, padding: "10px 15px", fontSize: 16 }}>
+        Добавить карточку
+      </button>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))",
+          gap: 20,
+        }}
+      >
+        {cards.map((card) => (
+          <div
+            key={card.id}
+            style={{
+              border: "2px solid #444",
+              borderRadius: 12,
+              padding: 10,
+              textAlign: "center",
+              boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
+            }}
+          >
+            <img
+              src={card.image}
+              alt={card.name}
+              style={{ width: "100%", height: 150, objectFit: "cover", borderRadius: 8 }}
+            />
+            <h3 style={{ margin: "10px 0 5px" }}>{card.name}</h3>
+            <p>Ранг: <b>{card.rank}</b></p>
+            <button
+              onClick={() => promoteCard(card.id)}
+              style={{ padding: "6px 12px", cursor: "pointer" }}
+            >
+              Повысить ранг ⬆
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
